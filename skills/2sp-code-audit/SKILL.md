@@ -49,7 +49,47 @@ pytest tests/ -v
 
 ---
 
-### 3. LL-Metadata Protocol
+### 3. Import Validation
+**Objective**: Verify all modules can be imported without runtime errors.
+
+**Checks**:
+- [ ] All public modules import successfully
+- [ ] No circular import issues
+- [ ] No missing dependencies at import time
+
+**Commands**:
+```bash
+# Test all module imports (customize per project)
+python -c "
+from src.config import *
+from src.core.graph import *
+# ... add all key module imports
+print('All imports OK')
+"
+```
+
+---
+
+### 4. Dependency Check
+**Objective**: Ensure requirements.txt matches actual usage.
+
+**Checks**:
+- [ ] All imported third-party packages are in requirements.txt
+- [ ] No unused dependencies listed
+- [ ] Version constraints are appropriate
+
+**Commands**:
+```bash
+# List installed packages
+pip freeze | grep -v "pkg_resources"
+
+# Check for missing imports (manual review)
+grep -rh "^import \|^from " src/ | sort | uniq
+```
+
+---
+
+### 5. LL-Metadata Protocol
 **Objective**: Ensure project metadata follows 2SP standards.
 
 **Checks**:
@@ -81,7 +121,7 @@ pytest tests/ -v
 
 ---
 
-### 4. Documentation
+### 6. Documentation
 **Objective**: Ensure README and key docs are accurate and up-to-date.
 
 **Checks**:
@@ -101,7 +141,7 @@ pytest tests/ -v
 
 ---
 
-### 5. Linting & Formatting
+### 7. Linting & Formatting
 **Objective**: Ensure code quality and consistency.
 
 **Checks**:
@@ -121,7 +161,7 @@ mypy src/
 
 ---
 
-### 6. Git Commit
+### 8. Git Commit
 **Objective**: Stage and commit all changes with a meaningful message.
 
 **Process**:
