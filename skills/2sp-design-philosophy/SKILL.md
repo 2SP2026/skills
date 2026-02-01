@@ -65,6 +65,40 @@ Every 2SP application should be installable and usable without requiring:
 
 ---
 
+## Licensing Compliance
+
+> **"Know your dependencies. Document your obligations."**
+
+When bundling third-party components, ensure all licensing requirements are met:
+
+### License Types & Requirements
+
+| License | Attribution Required | Include License Text | Source Access |
+|---------|---------------------|---------------------|---------------|
+| **MIT** | ✅ | ✅ | ❌ |
+| **BSD 2/3-Clause** | ✅ | ✅ | ❌ |
+| **Apache 2.0** | ✅ | ✅ | ❌ |
+| **LGPL 2.1/3.0** | ✅ | ✅ | ✅ (if modified) |
+| **GPL** | ⚠️ Copyleft | ✅ | ✅ |
+
+### Compliance Checklist
+
+- [ ] Create `THIRD_PARTY_LICENSES.md` documenting all bundled components
+- [ ] Include copyright notices for all third-party code
+- [ ] Include full license texts (or reference to them)
+- [ ] For LGPL components: provide link to source code
+- [ ] Verify no GPL components are linked (unless project is GPL)
+- [ ] Keep original `LICENSE` files in bundled directories
+
+### Best Practices
+
+1. **Prefer permissive licenses** (MIT, BSD, Apache) for dependencies
+2. **Use external processes** for LGPL components (subprocess, not linking)
+3. **Document everything** — future you will thank present you
+4. **Run license audits** before major releases
+
+---
+
 ## The 2SP Difference
 
 ### Legacy Software Problems vs 2SP Solutions
@@ -144,5 +178,6 @@ A suite of professional tools that:
 
 ## Version History
 
+- **v1.2** (2026-02-01): Added Licensing Compliance section with license types and checklist
 - **v1.1** (2026-02-01): Promoted Code Modularity to core Fourth Pillar (was project-specific)
 - **v1.0** (2026-02-01): Initial version, consolidated from 2sp_lidar_analysis and 2sp_lidar_viewer_potree

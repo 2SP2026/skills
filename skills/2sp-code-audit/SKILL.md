@@ -291,7 +291,77 @@ if (currentFPS < targetFPS) {
 
 ---
 
-### 10. Git Commit
+### 10. Licensing Compliance
+**Objective**: Ensure all third-party dependencies and bundled components are properly licensed and documented.
+
+**Why This Matters**:
+- Open source licenses have legal requirements that must be met
+- Bundling binaries requires proper attribution
+- LGPL components need special handling (source access)
+- GPL components can make your entire project GPL ("copyleft")
+
+**Checks**:
+
+#### Third-Party Documentation
+- [ ] `THIRD_PARTY_LICENSES.md` exists at project root (for projects with bundled components)
+- [ ] All bundled binaries/libraries are listed with versions
+- [ ] License type identified for each component
+- [ ] Copyright notices included for all components
+
+#### License Compliance by Type
+
+| License | Requirements |
+|---------|--------------|
+| **MIT** | Include copyright + license text |
+| **BSD 2/3-Clause** | Include copyright + license text |
+| **Apache 2.0** | Include copyright + license + NOTICE file (if exists) |
+| **LGPL 2.1/3.0** | Include license, provide source access link, no static linking |
+| **GPL** | ⚠️ Avoid unless project is GPL (copyleft viral) |
+
+#### Python Dependencies
+- [ ] All pip packages checked for compatible licenses
+- [ ] No GPL packages (unless intentional)
+- [ ] Commercial/proprietary packages documented
+
+**Commands**:
+```bash
+# Check for THIRD_PARTY_LICENSES.md
+ls THIRD_PARTY_LICENSES.md
+
+# List bundled binaries (if any)
+find bin/ -type f -executable 2>/dev/null | head -20
+
+# Check pip package licenses (requires pip-licenses)
+pip-licenses --format=markdown
+
+# Quick license check for common problematic licenses
+pip-licenses | grep -i "gpl\|agpl\|copyleft"
+```
+
+**THIRD_PARTY_LICENSES.md Template**:
+```markdown
+# Third-Party Licenses
+
+## Summary
+| Component | Version | License | Attribution Required |
+|-----------|---------|---------|---------------------|
+| [Name] | [X.Y.Z] | [MIT/BSD/etc] | Yes |
+
+## Detailed License Texts
+### [Component Name] ([License])
+[Full license text or reference]
+Source: [URL]
+```
+
+**Red Flags**:
+- ❌ GPL/AGPL dependencies in non-GPL projects
+- ❌ Bundled binaries without documented licenses
+- ❌ Missing copyright notices
+- ❌ LGPL components statically linked
+
+---
+
+### 11. Git Commit
 **Objective**: Stage and commit all changes with a meaningful message.
 
 **Process**:
@@ -365,6 +435,7 @@ After completing the audit, summarize findings:
 | Technical Docs | ✅/⚠️/❌ | [TECH_STACK.md, ARCHITECTURE.md] |
 | Linting | ✅/⚠️/❌ | [Warning count] |
 | Hardware Efficiency | ✅/⚠️/❌ | [Worker, compression, GPU fallbacks] |
+| Licensing Compliance | ✅/⚠️/❌ | [THIRD_PARTY_LICENSES.md, no GPL] |
 | Git Commit | ✅/⚠️/❌ | [Commit hash] |
 
 ---
