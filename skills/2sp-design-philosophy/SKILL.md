@@ -1,6 +1,6 @@
 ---
 name: 2sp-design-philosophy
-description: Apply the 2SP Design Philosophy (Three Pillars) to any project
+description: Apply the 2SP Design Philosophy (Four Pillars) to any project
 ---
 
 # 2SP Design Philosophy Skill
@@ -9,9 +9,9 @@ This skill defines the core design principles that apply to **ALL** 2SP projects
 
 ---
 
-## The Three Pillars
+## The Four Pillars
 
-Every 2SP project is built on three fundamental design pillars that take precedence over feature expansion:
+Every 2SP project is built on four fundamental design pillars that take precedence over feature expansion:
 
 ### 1. Robustness
 **No crashes. Graceful degradation. Predictable behavior.**
@@ -39,6 +39,15 @@ Every 2SP project is built on three fundamental design pillars that take precede
 - Parallel processing with controllable resource usage
 - Vectorized operations (NumPy/SciPy) over Python loops
 - GPU acceleration where beneficial (optional, graceful fallback)
+
+### 4. Code Modularity & Reusability
+**Write once, use everywhere. Features should be portable across projects.**
+
+- Extract common logic into standalone, reusable functions
+- Use dependency injection for platform-specific behavior
+- Keep I/O separate from business logic
+- Document public APIs for cross-project use
+- Design features that can be shared between related projects
 
 ---
 
@@ -80,8 +89,9 @@ When evaluating new features or changes, ask:
 | **Robustness** | Does this handle errors gracefully? What happens on failure? |
 | **Cross-Platform** | Does this work on macOS without hacks? Did I use `pathlib.Path`? |
 | **Efficiency** | What's the memory footprint at scale? Does it stream or load all? |
+| **Modularity** | Can this code be reused in other projects? Is it decoupled? |
 
-**If a feature doesn't pass all three, it either needs redesign or should be deprioritized.**
+**If a feature doesn't pass all four, it either needs redesign or should be deprioritized.**
 
 ---
 
@@ -102,18 +112,19 @@ When evaluating new features or changes, ask:
 - [ ] Verify memory usage is bounded for large inputs
 - [ ] Confirm feature works on macOS (not just Windows)
 - [ ] Ensure no new external dependencies that break UX
+- [ ] Check code is modular and reusable across projects
 
 ---
 
 ## Project-Specific Extensions
 
-Individual projects may add a **Fourth Pillar** specific to their domain:
+Individual projects may add a **Fifth Pillar** specific to their domain:
 
-| Project | Fourth Pillar |
-|---------|---------------|
-| **2sp_lidar_viewer_potree** | Code Modularity (features portable to Standard Edition) |
+| Project | Fifth Pillar |
+|---------|--------------|
 | **ll_tts** | Voice Quality (natural, expressive synthesis) |
 | **ll_music** | Audio Fidelity (professional-grade output) |
+| **2sp_lidar_viewer_potree** | Hybrid Architecture (instant + streaming modes) |
 
 Document project-specific pillars in `docs/DESIGN_PHILOSOPHY.md` or `docs/DESIGN_PRINCIPLES.md`.
 
@@ -133,4 +144,5 @@ A suite of professional tools that:
 
 ## Version History
 
+- **v1.1** (2026-02-01): Promoted Code Modularity to core Fourth Pillar (was project-specific)
 - **v1.0** (2026-02-01): Initial version, consolidated from 2sp_lidar_analysis and 2sp_lidar_viewer_potree
