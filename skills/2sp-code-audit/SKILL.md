@@ -216,7 +216,82 @@ grep -i "version" docs/TECH_STACK.md | head -3
 
 ---
 
-### 9. Git Commit
+### 9. Hardware Efficiency Review
+**Objective**: Ensure code is optimized for cross-platform hardware differences between Windows (NVIDIA GPU/CUDA) and macOS (Metal/MPS).
+
+**Why This Matters**:
+- Windows users often have NVIDIA GPUs with CUDA acceleration
+- macOS users have Apple Silicon with Metal/MPS acceleration
+- Web applications must work across both with WebGL/WebGPU fallbacks
+
+**Checks**:
+
+#### Backend (Python/C++)
+- [ ] GPU acceleration has fallback to CPU when unavailable
+- [ ] PyTorch code uses device-agnostic patterns (`device = torch.device(...)`)
+- [ ] NumPy operations are vectorized (avoid Python loops for large arrays)
+- [ ] Large file operations use memory mapping or chunked loading where appropriate
+- [ ] Parallel processing uses `multiprocessing` or `concurrent.futures`
+
+#### Frontend (JavaScript/WebGL)
+- [ ] Heavy parsing uses Web Workers (background threads)
+- [ ] Binary data transfer preferred over JSON for large payloads
+- [ ] Response compression enabled (GZIP/ZSTD)
+- [ ] WebGL buffers use typed arrays (Float32Array, Uint8Array)
+- [ ] Render loop has FPS monitoring with adaptive quality
+
+#### Platform-Specific Considerations
+
+| Platform | GPU Stack | Considerations |
+|----------|-----------|----------------|
+| **Windows** | NVIDIA CUDA, DirectX | Leverage CUDA for ML/compute, larger VRAM typical |
+| **macOS** | Metal, MPS | Use MPS for PyTorch, Metal for graphics, unified memory |
+| **Web** | WebGL 2.0, WebGPU | Feature-detect capabilities, provide fallbacks |
+
+**Commands**:
+```bash
+# Check for hardcoded CUDA references (should have fallbacks)
+grep -r "\.cuda()" src/
+
+# Check for device-agnostic patterns
+grep -r "torch\.device" src/
+
+# Check for Web Worker usage in JS
+grep -r "new Worker" src/static/
+
+# Check for compression middleware
+grep -r "compress\|Compress\|gzip" src/
+```
+
+**PyTorch Device-Agnostic Pattern**:
+```python
+# Preferred pattern
+def get_device():
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+device = get_device()
+model = model.to(device)
+```
+
+**Web Performance Pattern**:
+```javascript
+// Heavy parsing in Web Worker
+const worker = new Worker('/static/parser-worker.js');
+worker.postMessage({ buffer }, [buffer]); // Zero-copy transfer
+
+// FPS-based adaptive quality
+if (currentFPS < targetFPS) {
+    reduceQuality();
+}
+```
+
+---
+
+### 10. Git Commit
 **Objective**: Stage and commit all changes with a meaningful message.
 
 **Process**:
@@ -289,6 +364,7 @@ After completing the audit, summarize findings:
 | Documentation | ✅/⚠️/❌ | [README status] |
 | Technical Docs | ✅/⚠️/❌ | [TECH_STACK.md, ARCHITECTURE.md] |
 | Linting | ✅/⚠️/❌ | [Warning count] |
+| Hardware Efficiency | ✅/⚠️/❌ | [Worker, compression, GPU fallbacks] |
 | Git Commit | ✅/⚠️/❌ | [Commit hash] |
 
 ---
