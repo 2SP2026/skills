@@ -161,7 +161,62 @@ mypy src/
 
 ---
 
-### 8. Git Commit
+### 8. Technical Documentation
+**Objective**: Ensure comprehensive technical documentation exists and is current.
+
+**Required Documents** (stored in `/docs` subdirectory):
+
+| Document | Filename | Purpose |
+|----------|----------|---------|
+| **Tech Stack** | `TECH_STACK.md` | Full technology composition and dependencies |
+| **Architecture** | `ARCHITECTURE.md` | Program block diagram with execution flows |
+
+**Checks**:
+
+- [ ] `/docs` subdirectory exists in project root
+- [ ] `TECH_STACK.md` exists and covers all technologies used
+- [ ] `ARCHITECTURE.md` exists with Mermaid flow diagrams
+- [ ] Version numbers in docs match current project version
+- [ ] All major components/features are documented
+
+**TECH_STACK.md Required Sections**:
+
+```markdown
+# [Project Name] - Tech Stack Composition
+- Overview
+- Technology Stack (tables with version, purpose)
+- Architecture Summary (ASCII or Mermaid diagram)
+- Performance Characteristics
+- Cross-Platform Support
+- Dependency Summary
+```
+
+**ARCHITECTURE.md Required Sections**:
+
+```markdown
+# [Project Name] - Program Block Diagram
+- System Architecture Overview (Mermaid graph)
+- Detailed Execution Flows (Mermaid sequence/flowcharts)
+- Key Components and Functions (tables)
+- Data Flow Summary
+- Feature Matrix
+```
+
+**Commands**:
+
+```bash
+# Check if docs exist
+ls -la docs/TECH_STACK.md docs/ARCHITECTURE.md
+
+# Check version references are current
+grep -i "version" docs/TECH_STACK.md | head -3
+```
+
+**If Missing**: Create documentation using the established templates. Analyze the codebase structure and generate comprehensive tech stack and architecture documents.
+
+---
+
+### 9. Git Commit
 **Objective**: Stage and commit all changes with a meaningful message.
 
 **Process**:
@@ -170,6 +225,7 @@ mypy src/
 3. Commit with structured message
 
 **Commit Message Format**:
+
 ```
 vX.Y.Z: [Brief Summary]
 
@@ -185,6 +241,7 @@ vX.Y.Z: [Brief Summary]
 ```
 
 **Commands**:
+
 ```bash
 git add -A
 git status --short
@@ -193,57 +250,6 @@ git commit -m "vX.Y.Z: [Summary]
 - [Details]"
 git push
 ```
-
----
-
-### 9. Technical Documentation
-**Objective**: Ensure comprehensive technical documentation exists and is current.
-
-**Required Documents** (stored in `/docs` subdirectory):
-
-| Document | Filename | Purpose |
-|----------|----------|---------|
-| **Tech Stack** | `TECH_STACK.md` | Full technology composition and dependencies |
-| **Architecture** | `ARCHITECTURE.md` | Program block diagram with execution flows |
-
-**Checks**:
-- [ ] `/docs` subdirectory exists in project root
-- [ ] `TECH_STACK.md` exists and covers all technologies used
-- [ ] `ARCHITECTURE.md` exists with Mermaid flow diagrams
-- [ ] Version numbers in docs match current project version
-- [ ] All major components/features are documented
-
-**TECH_STACK.md Required Sections**:
-```markdown
-# [Project Name] - Tech Stack Composition
-- Overview
-- Technology Stack (tables with version, purpose)
-- Architecture Summary (ASCII or Mermaid diagram)
-- Performance Characteristics
-- Cross-Platform Support
-- Dependency Summary
-```
-
-**ARCHITECTURE.md Required Sections**:
-```markdown
-# [Project Name] - Program Block Diagram
-- System Architecture Overview (Mermaid graph)
-- Detailed Execution Flows (Mermaid sequence/flowcharts)
-- Key Components and Functions (tables)
-- Data Flow Summary
-- Feature Matrix
-```
-
-**Commands**:
-```bash
-# Check if docs exist
-ls -la docs/TECH_STACK.md docs/ARCHITECTURE.md
-
-# Check version references are current
-grep -i "version" docs/TECH_STACK.md | head -3
-```
-
-**If Missing**: Create documentation using the established templates. Analyze the codebase structure and generate comprehensive tech stack and architecture documents.
 
 ---
 
