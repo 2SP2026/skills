@@ -5,17 +5,31 @@ description: Automates the checking and synchronization of all git repositories 
 
 # 2sp-git-check: Workspace Git Synchronization
 
-This skill provides a standardized protocol for identifying, checking, and syncing all git-enabled projects within the `/Users/leol/Desktop/Antigravity` workspace.
+This skill provides a standardized protocol for identifying, checking, and syncing all git-enabled projects within the Antigravity workspace.
 
 ## Core Objective
 
 Ensure all local project forks are synchronized with their respective GitHub repositories and provide a clear, categorized status report.
 
+---
+
+## Quick Reference (Agentic One-Liner)
+
+For fast agentic execution, use this single command:
+
+```bash
+cd /Users/leol/Desktop/Antigravity && for dir in */; do if [ -d "${dir}.git" ]; then repo="${dir%/}"; cd "$dir"; dirty=$(git status --porcelain 2>/dev/null); upstream=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null); if [ -n "$dirty" ]; then echo "⚠️  $repo — Dirty"; elif [ -z "$upstream" ]; then echo "🚫 $repo — No upstream"; else git fetch --quiet 2>/dev/null; local=$(git rev-parse @ 2>/dev/null); remote=$(git rev-parse @{u} 2>/dev/null); base=$(git merge-base @ @{u} 2>/dev/null); if [ "$local" = "$remote" ]; then echo "✅ $repo"; elif [ "$local" = "$base" ]; then git pull --quiet 2>/dev/null && echo "⬇️  $repo — Pulled" || echo "💥 $repo — Pull failed"; elif [ "$remote" = "$base" ]; then echo "⬆️  $repo — Ahead"; else echo "❌ $repo — Diverged"; fi; fi; cd ..; fi; done
+```
+
+This outputs one line per repo with emoji status indicators.
+
+---
+
 ## Execution Protocol
 
 ### Phase 1: Discovery
 
-Scan the `/Users/leol/Desktop/Antigravity` directory for all immediate subdirectories containing a `.git/` folder. Skip hidden directories (those starting with `.`).
+Scan the workspace directory for all immediate subdirectories containing a `.git/` folder. Skip hidden directories (those starting with `.`).
 
 ### Phase 2: Analysis & Sync
 
@@ -45,15 +59,16 @@ Generate a categorized summary with counts:
 
 ---
 
-## Reference Implementation (zsh/bash)
+## Full Reference Script (zsh/bash)
 
-This script is the canonical implementation. Execute it directly or use it as a reference for agentic tool calls.
+This script provides detailed output with summary statistics. Accepts an optional workspace path argument.
 
 ```bash
 #!/bin/bash
-set -euo pipefail
+# 2SP Git Check — Workspace Synchronization Script
+# Usage: ./2sp-git-check.sh [workspace_path]
 
-WORKSPACE="/Users/leol/Desktop/Antigravity"
+WORKSPACE="${1:-/Users/leol/Desktop/Antigravity}"
 
 # Result accumulators
 declare -a UP_TO_DATE=()
@@ -63,6 +78,7 @@ declare -a DIRTY=()
 declare -a DIVERGED=()
 declare -a NO_UPSTREAM=()
 declare -a ERRORS=()
+TOTAL_REPOS=0
 
 echo "═══════════════════════════════════════════════════════════"
 echo "  2SP Git Check — Workspace Synchronization"
@@ -71,17 +87,18 @@ echo "  Started: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
-cd "$WORKSPACE"
+cd "$WORKSPACE" || { echo "ERROR: Cannot access workspace"; exit 1; }
 
 for dir in */; do
     # Skip if not a git repository
     [[ ! -d "${dir}.git" ]] && continue
     
     repo_name="${dir%/}"
+    ((TOTAL_REPOS++))
     
     # Run in subshell to isolate directory changes and errors
     result=$(
-        cd "$dir" 2>/dev/null || { echo "ERROR:Cannot access directory"; exit 1; }
+        cd "$dir" 2>/dev/null || { echo "ERROR:Cannot access directory"; exit 0; }
         
         # Check for dirty working tree
         if [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
@@ -128,7 +145,7 @@ for dir in */; do
     case "$result" in
         UP_TO_DATE)
             UP_TO_DATE+=("$repo_name")
-            echo "  ✅  $repo_name — Up to date"
+            echo "  ✅  $repo_name"
             ;;
         PULLED)
             PULLED+=("$repo_name")
@@ -167,6 +184,8 @@ echo ""
 echo "═══════════════════════════════════════════════════════════"
 echo "  SUMMARY"
 echo "═══════════════════════════════════════════════════════════"
+echo ""
+echo "  📊 Total Scanned:  $TOTAL_REPOS"
 echo ""
 echo "  ✅ Up to Date:   ${#UP_TO_DATE[@]}"
 echo "  ⬇️  Pulled:       ${#PULLED[@]}"
@@ -223,9 +242,9 @@ echo "════════════════════════�
 
 ## Agentic Execution Guide
 
-When executing this skill as an agent (without running the full bash script), follow this per-repository logic:
+When executing this skill as an agent, prefer the **one-liner** for speed, or use per-repo logic for more control:
 
-### For Each Repository
+### Per-Repository Logic
 
 ```bash
 # 1. Navigate and check dirty state
