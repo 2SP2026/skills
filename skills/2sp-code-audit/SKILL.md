@@ -122,13 +122,14 @@ grep -rh "^import \|^from " src/ | sort | uniq
 ---
 
 ### 6. Documentation
-**Objective**: Ensure README and key docs are accurate and up-to-date.
+**Objective**: Ensure README, key docs, and project planning documents are accurate and up-to-date.
 
 **Checks**:
 - [ ] `README.md` has correct version number
 - [ ] Project status section reflects current phase
 - [ ] Installation instructions are accurate
 - [ ] Technology stack section matches actual dependencies
+- [ ] **`PROJECT_PLAN.md` accurately reflects actual development state** (see below)
 
 **Footer Format**:
 ```markdown
@@ -139,7 +140,53 @@ grep -rh "^import \|^from " src/ | sort | uniq
 **Last Updated**: YYYY-MM-DD
 ```
 
+#### Project Dev Plan Review ⚠️ CRITICAL
+
+**Why This Matters**:
+Project planning documents often become outdated as development progresses. Features that were "planned" may have been fully implemented, but the plan still lists them as "TODO". This creates confusion about the actual project state.
+
+**Required Review Process**:
+
+1. **Identify Planning Documents**:
+   ```bash
+   # Find planning/roadmap documents
+   find . -name "*PLAN*.md" -o -name "*ROADMAP*.md" -o -name "*TODO*.md" 2>/dev/null
+   ```
+
+2. **Cross-Reference Code vs Plan**:
+   - Read `PROJECT_PLAN.md` (or equivalent)
+   - Compare listed "TODO" items against actual codebase
+   - For each planned feature, search codebase to verify if implemented:
+     ```bash
+     # Example: Check if "streaming" is implemented
+     grep -r "stream" src/ --include="*.py" | head -10
+     ```
+
+3. **Update Plan to Reflect Reality**:
+   - Mark completed features with `[x]` or move to "Completed" section
+   - Update version numbers and dates
+   - Revise status from "Planning Phase X" to actual current state
+   - Remove obsolete planning content that no longer applies
+
+4. **Sync Version History**:
+   - `version.py` version should match plan's stated version
+   - `CHANGELOG.md` entries should align with plan milestones
+   - Plan "Last Updated" date should be current
+
+**Common Issues**:
+- ❌ Plan says "Phase 2.5 Complete" but version is v7.3.2 (6 major versions ahead)
+- ❌ "Streaming Architecture" listed as TODO but `streaming_pipeline.py` exists
+- ❌ "GPU Acceleration" in future roadmap but `iptd_gpu.py` is fully implemented
+- ❌ Plan describes tkinter GUI but actual code uses DearPyGui
+
+**Good Practice**:
+- Keep plan concise: Document what IS, not what WAS planned
+- Use checkboxes for quick status scanning
+- Include a "Future Roadmap" section for uncommitted ideas
+- Version the plan document header with project version
+
 ---
+
 
 ### 7. Linting & Formatting
 **Objective**: Ensure code quality and consistency.
@@ -432,11 +479,13 @@ After completing the audit, summarize findings:
 | Code Robustness | ✅/⚠️/❌ | [Tests: X/Y passing] |
 | LL-Metadata | ✅/⚠️/❌ | [program.json status] |
 | Documentation | ✅/⚠️/❌ | [README status] |
+| **Project Dev Plan** | ✅/⚠️/❌ | [PROJECT_PLAN.md synced with codebase] |
 | Technical Docs | ✅/⚠️/❌ | [TECH_STACK.md, ARCHITECTURE.md] |
 | Linting | ✅/⚠️/❌ | [Warning count] |
 | Hardware Efficiency | ✅/⚠️/❌ | [Worker, compression, GPU fallbacks] |
 | Licensing Compliance | ✅/⚠️/❌ | [THIRD_PARTY_LICENSES.md, no GPL] |
 | Git Commit | ✅/⚠️/❌ | [Commit hash] |
+
 
 ---
 
