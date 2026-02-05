@@ -9,22 +9,26 @@ This skill provides a standardized checklist for auditing Python projects within
 
 ## Audit Checklist
 
-### 1. Cross-Platform Compatibility
-**Objective**: Ensure the codebase works on macOS, Windows, and Linux.
+### 1. Poly-Computing Architecture
+**Objective**: Ensure the codebase isn't just "compatible" but natively optimized for the specific hardware (macOS Metal/MPS vs Windows CUDA).
 
 **Checks**:
-- [ ] Use `pathlib.Path` instead of `os.path.join` for all file path operations
-- [ ] No hardcoded path separators (`/` or `\`)
-- [ ] Check for platform-specific code and ensure alternatives exist
-- [ ] Virtual environment uses `.venv` (hidden directory standard)
+
+- [ ] Implement a dynamic hardware dispatcher (Check for CUDA vs MPS vs CPU)
+- [ ] Use `pathlib.Path` for cross-platform file handling (baseline)
+- [ ] Critical compute loops are vectorized or GPU-accelerated
+- [ ] Fallback paths (e.g., vectorized CPU) exist for all hardware-optimized logic
+- [ ] Virtual environment uses `.venv` standard
 
 **Commands**:
-```bash
-# Search for os.path usage (should return no results)
-grep -r "os.path.join" src/
 
-# Verify pathlib usage
-grep -r "from pathlib import Path" src/
+```bash
+# Search for hardware-specific dispatcher logic
+grep -r "torch.backends.mps.is_available" src/
+grep -r "torch.cuda.is_available" src/
+
+# Verify vectorized logic (numpy over pure python loops)
+grep -r "np\.vectorize\|np\.apply_along_axis" src/
 ```
 
 ---
@@ -197,6 +201,7 @@ Project planning documents often become outdated as development progresses. Feat
 - [ ] Consistent code style
 
 **Commands**:
+
 ```bash
 # Python linting (optional, if tools installed)
 flake8 src/ --max-line-length=120
