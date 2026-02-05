@@ -15,10 +15,12 @@ This skill provides a standardized checklist for auditing Python projects within
 **Checks**:
 
 - [ ] Implement a dynamic hardware dispatcher (Check for CUDA vs MPS vs CPU)
+- [ ] `poly_compute_dispatcher.py` exists for hardware-aware workload routing
 - [ ] Use `pathlib.Path` for cross-platform file handling (baseline)
 - [ ] Critical compute loops are vectorized or GPU-accelerated
 - [ ] Fallback paths (e.g., vectorized CPU) exist for all hardware-optimized logic
 - [ ] Virtual environment uses `.venv` standard
+- [ ] k-NN operations use optimal backend (scipy cKDTree for 3D, FAISS for high-dim)
 
 **Commands**:
 
@@ -26,9 +28,13 @@ This skill provides a standardized checklist for auditing Python projects within
 # Search for hardware-specific dispatcher logic
 grep -r "torch.backends.mps.is_available" src/
 grep -r "torch.cuda.is_available" src/
+grep -r "PolyComputeDispatcher" src/
 
 # Verify vectorized logic (numpy over pure python loops)
 grep -r "np\.vectorize\|np\.apply_along_axis" src/
+
+# Check for FAISS integration (optional GPU k-NN)
+grep -r "faiss" src/
 ```
 
 ---
@@ -79,8 +85,10 @@ print('All imports OK')
 
 **Checks**:
 - [ ] All imported third-party packages are in requirements.txt
+- [ ] `requirements-gpu.txt` exists for optional GPU dependencies
 - [ ] No unused dependencies listed
 - [ ] Version constraints are appropriate
+- [ ] faiss-cpu/faiss-gpu listed if GPU k-NN acceleration is implemented
 
 **Commands**:
 ```bash
@@ -89,6 +97,9 @@ pip freeze | grep -v "pkg_resources"
 
 # Check for missing imports (manual review)
 grep -rh "^import \|^from " src/ | sort | uniq
+
+# Verify GPU requirements file exists
+ls requirements-gpu.txt
 ```
 
 ---
@@ -100,6 +111,23 @@ grep -rh "^import \|^from " src/ | sort | uniq
 - [ ] `program.json` exists at project root
 - [ ] Version in `program.json` matches `src/version.py`
 - [ ] Author, license, and branding fields are correct
+
+**Version Sync Checklist** (all must match current version):
+- [ ] `src/version.py` - VERSION constant
+- [ ] `program.json` - program_version field  
+- [ ] `README.md` - header and footer version
+- [ ] `CHANGELOG.md` - latest entry matches current version
+- [ ] `docs/TECH_STACK.md` - Version header
+
+**Commands** (PowerShell):
+```powershell
+# Quick version sync check
+Get-Content program.json | ConvertFrom-Json | Select program_version
+python -c "from src.version import VERSION; print('version.py:', VERSION)"
+Select-String -Path README.md -Pattern "Project Version"
+Select-String -Path docs\TECH_STACK.md -Pattern "Version:"
+Select-String -Path CHANGELOG.md -Pattern "^## " | Select-Object -First 1
+```
 
 **Required `program.json` Structure**:
 ```json
