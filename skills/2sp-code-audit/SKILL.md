@@ -242,7 +242,7 @@ mypy src/
 ---
 
 ### 8. Technical Documentation
-**Objective**: Ensure comprehensive technical documentation exists and is current.
+**Objective**: Ensure comprehensive technical documentation exists, is current, and accurately reflects the codebase.
 
 **Required Documents** (stored in `/docs` subdirectory):
 
@@ -251,48 +251,137 @@ mypy src/
 | **Tech Stack** | `TECH_STACK.md` | Full technology composition and dependencies |
 | **Architecture** | `ARCHITECTURE.md` | Program block diagram with execution flows |
 
-**Checks**:
+#### Phase 1: Existence Checks
 
 - [ ] `/docs` subdirectory exists in project root
-- [ ] `TECH_STACK.md` exists and covers all technologies used
-- [ ] `ARCHITECTURE.md` exists with Mermaid flow diagrams
-- [ ] Version numbers in docs match current project version
-- [ ] All major components/features are documented
+- [ ] `TECH_STACK.md` exists
+- [ ] `ARCHITECTURE.md` exists
 
-**TECH_STACK.md Required Sections**:
+#### Phase 2: Version Synchronization
 
-```markdown
-# [Project Name] - Tech Stack Composition
-- Overview
-- Technology Stack (tables with version, purpose)
-- Architecture Summary (ASCII or Mermaid diagram)
-- Performance Characteristics
-- Cross-Platform Support
-- Dependency Summary
-```
-
-**ARCHITECTURE.md Required Sections**:
-
-```markdown
-# [Project Name] - Program Block Diagram
-- System Architecture Overview (Mermaid graph)
-- Detailed Execution Flows (Mermaid sequence/flowcharts)
-- Key Components and Functions (tables)
-- Data Flow Summary
-- Feature Matrix
-```
+- [ ] Version numbers in `TECH_STACK.md` match current project version
+- [ ] Version numbers in `ARCHITECTURE.md` match current project version
+- [ ] "Last Updated" dates are current
 
 **Commands**:
-
 ```bash
-# Check if docs exist
-ls -la docs/TECH_STACK.md docs/ARCHITECTURE.md
-
-# Check version references are current
+# Check version sync
 grep -i "version" docs/TECH_STACK.md | head -3
+grep -i "version" docs/ARCHITECTURE.md | head -3
+python -c "from src.version import VERSION; print('project:', VERSION)"
 ```
 
-**If Missing**: Create documentation using the established templates. Analyze the codebase structure and generate comprehensive tech stack and architecture documents.
+#### Phase 3: Content Accuracy Review ⚠️ CRITICAL
+
+**Why This Matters**:
+Technical documentation often lags behind development. New features, components, and architectural changes may be implemented but not reflected in the docs. This creates confusion and reduces documentation value.
+
+**Required Review Process**:
+
+1. **Analyze Current Codebase**:
+   ```bash
+   # List all utility modules
+   ls -la src/utils/*.py
+   
+   # List all processor nodes
+   ls -la src/core/processors/*.py
+   
+   # Check for GPU/acceleration modules
+   grep -r "cuda\|gpu\|GPU\|CUDA" src/*.py src/**/*.py | head -10
+   
+   # Check for new dependencies in requirements.txt
+   cat requirements.txt | tail -20
+   ```
+
+2. **Cross-Reference Documentation vs Code**:
+   
+   | Check | What to Look For |
+   |-------|------------------|
+   | **TECH_STACK.md** | New dependencies, version changes, new processing modules |
+   | **ARCHITECTURE.md** | New components, new layers, updated flows |
+   
+   Common gaps:
+   - New utility modules not in "Utilities" table
+   - New GPU/acceleration backends not documented
+   - New GUI panels/features not in architecture diagram
+   - Updated library versions not reflected
+   - New processing nodes missing from diagrams
+
+3. **Update Documentation to Match Reality**:
+   
+   **TECH_STACK.md Updates**:
+   - [ ] Library versions match `requirements.txt` (especially pinned versions)
+   - [ ] All `src/utils/*.py` modules are documented
+   - [ ] All `src/core/processors/*.py` are documented
+   - [ ] GPU/acceleration features are documented with measured speedups
+   - [ ] Performance characteristics reflect current benchmarks
+   
+   **ARCHITECTURE.md Updates**:
+   - [ ] Mermaid diagrams include all current layers/components
+   - [ ] New GUI panels are in the GUI layer
+   - [ ] New backend dispatchers are shown (e.g., Poly-Computing layer)
+   - [ ] Feature matrix is complete and current
+   - [ ] Data flow reflects current implementation
+
+4. **Validate Key Sections**:
+   
+   **TECH_STACK.md Required Sections**:
+   ```markdown
+   # [Project Name] - Tech Stack Composition
+   - Overview
+   - Technology Stack (tables with version, purpose)
+   - Architecture Summary (ASCII or Mermaid diagram)
+   - Performance Characteristics
+   - Cross-Platform Support
+   - Dependency Summary
+   ```
+   
+   **ARCHITECTURE.md Required Sections**:
+   ```markdown
+   # [Project Name] - Program Block Diagram
+   - System Architecture Overview (Mermaid graph)
+   - Detailed Execution Flows (Mermaid sequence/flowcharts)
+   - Key Components and Functions (tables)
+   - Data Flow Summary
+   - Feature Matrix
+   ```
+
+#### Phase 4: Update Actions
+
+**If Documentation is Stale**:
+
+1. Update version header to match `src/version.py`
+2. Update "Last Updated" date
+3. Add missing components to tables
+4. Update Mermaid diagrams with new layers/components
+5. Update performance metrics with current benchmarks
+6. Add new features to Feature Matrix
+
+**Common Updates to Check**:
+
+| Component Type | TECH_STACK.md Location | ARCHITECTURE.md Location |
+|----------------|------------------------|--------------------------|
+| New utility module | Utilities table | May need new subgraph |
+| New processor node | Processing Algorithms section | Processing Nodes subgraph |
+| New GUI panel | GUI Layer section | GUI Layer subgraph |
+| New backend/dispatcher | Supporting Technologies | Poly-Computing Layer (or new layer) |
+| GPU acceleration | Performance Characteristics | Performance Optimization table |
+| New dependency | Dependency Summary | Data Layer (if relevant) |
+
+**Example: Adding a New GPU Backend**:
+```markdown
+# In TECH_STACK.md - Add to Spatial Processing section:
+#### GPU Triangulation (v7.6.0+)
+| Technology | Purpose |
+|------------|---------|
+| **gDel3D** | GPU-accelerated 3D Delaunay triangulation (CUDA 12.6) |
+
+# In ARCHITECTURE.md - Add new subgraph:
+subgraph "Poly-Computing Layer"
+    DISPATCHER["PolyComputeDispatcher"]
+    GPU_TRI["GPUTriangulationBackend"]
+end
+```
 
 ---
 
@@ -508,15 +597,18 @@ After completing the audit, summarize findings:
 
 | Category | Status | Notes |
 |----------|--------|-------|
-| Cross-Platform | ✅/⚠️/❌ | [Notes] |
+| Poly-Computing | ✅/⚠️/❌ | [PolyComputeDispatcher, GPU backends] |
 | Code Robustness | ✅/⚠️/❌ | [Tests: X/Y passing] |
-| LL-Metadata | ✅/⚠️/❌ | [program.json status] |
+| Import Validation | ✅/⚠️/❌ | [All modules import] |
+| Dependencies | ✅/⚠️/❌ | [requirements.txt complete] |
+| LL-Metadata | ✅/⚠️/❌ | [program.json, version sync] |
 | Documentation | ✅/⚠️/❌ | [README status] |
 | **Project Dev Plan** | ✅/⚠️/❌ | [PROJECT_PLAN.md synced with codebase] |
-| Technical Docs | ✅/⚠️/❌ | [TECH_STACK.md, ARCHITECTURE.md] |
-| Linting | ✅/⚠️/❌ | [Warning count] |
-| Hardware Efficiency | ✅/⚠️/❌ | [Worker, compression, GPU fallbacks] |
-| Licensing Compliance | ✅/⚠️/❌ | [THIRD_PARTY_LICENSES.md, no GPL] |
+| Linting | ✅/⚠️/❌ | [Critical errors: 0, black applied] |
+| **Technical Docs Exist** | ✅/⚠️/❌ | [TECH_STACK.md, ARCHITECTURE.md] |
+| **Technical Docs Content** | ✅/⚠️/❌ | [Version sync, all components documented] |
+| Hardware Efficiency | ✅/⚠️/❌ | [GPU fallbacks, vectorization] |
+| Licensing Compliance | ✅/⚠️/❌ | [THIRD_PARTY_LICENSES.md, no GPL runtime] |
 | Git Commit | ✅/⚠️/❌ | [Commit hash] |
 
 
