@@ -1,6 +1,7 @@
 # 2SP Skills Library Manifest
 **Last Updated:** 2026-02-05  
-**Location:** `/Users/leol/Desktop/Antigravity/skills/skills/`
+**Location (macOS):** `/Users/leol/Desktop/Antigravity/skills/skills/`  
+**Location (Windows):** `c:\TempWork\Antigravity\skills\skills\`
 
 This manifest enables automatic skill discovery across all Antigravity projects. Skills are organized by category with trigger conditions for AI agents.
 
@@ -78,8 +79,12 @@ This manifest enables automatic skill discovery across all Antigravity projects.
 3. Follow skill instructions exactly
 
 ### Skill Path Pattern
-```
+```bash
+# macOS
 /Users/leol/Desktop/Antigravity/skills/skills/{skill-name}/SKILL.md
+
+# Windows
+c:\TempWork\Antigravity\skills\skills\{skill-name}\SKILL.md
 ```
 
 ### Priority Order
