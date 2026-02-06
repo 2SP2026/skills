@@ -20,8 +20,11 @@ This skill provides a standardized 5-phase approach for launching new projects w
 **Agent Actions**:
 
 ```bash
-# Index skills library
+# macOS
 ls /Users/leol/Desktop/Antigravity/skills/skills/
+
+# Windows (PowerShell)
+Get-ChildItem c:\TempWork\Antigravity\skills\skills\
 
 # Check for related KIs (agent reviews summaries provided at session start)
 ```
@@ -34,7 +37,9 @@ ls /Users/leol/Desktop/Antigravity/skills/skills/
 
 **Steps**:
 
-1. Create the project directory at `/Users/leol/Desktop/Antigravity/2sp_[project_name]`
+1. Create the project directory:
+   - **macOS**: `/Users/leol/Desktop/Antigravity/2sp_[project_name]`
+   - **Windows**: `c:\TempWork\Antigravity\2sp_[project_name]`
 2. Initialize virtual environment (`.venv`)
 3. Create standard folder structure: `/src`, `/tests`, `/docs`
 4. Create `program.json` with 2SP branding
@@ -45,17 +50,20 @@ ls /Users/leol/Desktop/Antigravity/skills/skills/
 **Commands**:
 
 ```bash
-# Create project directory
+# macOS
 mkdir -p /Users/leol/Desktop/Antigravity/2sp_[project_name]
 cd /Users/leol/Desktop/Antigravity/2sp_[project_name]
-
-# Create virtual environment
 python3 -m venv .venv
-
-# Create folder structure
 mkdir -p src tests docs
+git init
+```
 
-# Initialize git
+```powershell
+# Windows (PowerShell)
+New-Item -ItemType Directory -Path "c:\TempWork\Antigravity\2sp_[project_name]" -Force
+cd "c:\TempWork\Antigravity\2sp_[project_name]"
+python -m venv .venv
+New-Item -ItemType Directory -Path src, tests, docs -Force
 git init
 ```
 
